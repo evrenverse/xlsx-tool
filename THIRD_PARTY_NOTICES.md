@@ -4,7 +4,7 @@
 required license and copyright materials are included under
 `third_party_licenses/` and are shipped in every binary archive.
 
-The set is generated from `go.mod` for Linux, macOS, and Windows with
+The set is generated from `go.mod` for Linux with
 [`google/go-licenses`](https://github.com/google/go-licenses):
 
 ```bash

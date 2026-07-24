@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"testing"
 
@@ -14,15 +13,10 @@ import (
 )
 
 // buildBinary compiles the CLI into the test's temp directory and returns its
-// path. Windows will not execute a file without the .exe suffix, so the name
-// has to carry it there.
+// path.
 func buildBinary(t *testing.T) string {
 	t.Helper()
-	name := "xlsx-tool"
-	if runtime.GOOS == "windows" {
-		name += ".exe"
-	}
-	binPath := filepath.Join(t.TempDir(), name)
+	binPath := filepath.Join(t.TempDir(), "xlsx-tool")
 	build := exec.Command("go", "build", "-o", binPath, "./cmd/xlsx-tool/")
 	build.Dir = filepath.Join("..", "..")
 	if out, err := build.CombinedOutput(); err != nil {

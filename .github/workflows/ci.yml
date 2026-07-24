@@ -39,13 +39,11 @@ jobs:
       - name: Run agent workflow eval
         run: XLSX_TOOL_BIN=./xlsx-tool go run ./evals
 
+  # No LibreOffice here on purpose: prove the suite still runs when the
+  # optional recalculation dependency is absent.
   compatibility:
-    name: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+    name: Without optional dependencies
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

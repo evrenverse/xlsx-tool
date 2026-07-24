@@ -142,7 +142,7 @@ make check
 ```
 
 The quality gate includes formatting, vet, race tests, coverage, build, and the
-real CLI agent eval. CI additionally tests Linux, macOS, Windows, LibreOffice,
+real CLI agent eval. CI additionally tests Linux with and without LibreOffice,
 known vulnerabilities, CodeQL, and dependency changes.
 
 ## Project documentation

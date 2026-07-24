@@ -7,8 +7,8 @@ Releases are automated from signed or annotated `vMAJOR.MINOR.PATCH` tags.
    `compare/vPREVIOUS...HEAD` once a tag exists.
 2. Run `make release-check`.
 3. Create and push the release tag.
-4. GitHub Actions reruns checks and GoReleaser builds Linux, macOS, and Windows
-   archives for amd64 and arm64.
+4. GitHub Actions reruns checks and GoReleaser builds Linux archives for amd64
+   and arm64.
 5. The workflow publishes checksums, an SPDX SBOM, generated release notes,
    and GitHub/Sigstore provenance and SBOM attestations.
 6. Verify an archive with `checksums.txt` and
