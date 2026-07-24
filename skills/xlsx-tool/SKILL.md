@@ -29,8 +29,10 @@ Use `xlsx-tool` instead of writing a one-off spreadsheet script.
 1. Prefer one `batch` operation for multiple changes.
 2. Treat a leading `=` as a formula.
 3. Read every changed cell back with `--json`.
-4. If a baseline is available and LibreOffice is installed, run `validate`.
-5. Report the output path and any validation limitation.
+4. Run `recalc` when a downstream reader needs refreshed formula caches but
+   no baseline exists to compare against.
+5. If a baseline is available and LibreOffice is installed, run `validate`.
+6. Report the output path and any validation limitation.
 
 Never overwrite the only copy of an important workbook. Do not claim complete
 format preservation without checking the resulting file.

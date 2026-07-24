@@ -24,10 +24,10 @@ owns the public command contract, validation, resource limits, and atomic
 publication. `internal/format` owns stable output rendering. `evals` exercises
 the compiled CLI as an agent would; unit and fuzz tests cover internal behavior.
 
-Only `validate` crosses a process boundary. It invokes a locally installed
-LibreOffice executable with a fresh temporary user profile. The workbook is
-copied into that workspace, recalculated, checked, and published only after
-success.
+Only `recalc` and `validate` cross a process boundary. They invoke a locally
+installed LibreOffice executable with a fresh temporary user profile. The
+workbook is copied into that workspace, recalculated, and published only after
+success; `validate` then checks the result against a baseline.
 
 ## Design constraints
 

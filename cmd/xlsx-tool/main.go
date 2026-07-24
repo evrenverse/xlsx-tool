@@ -59,6 +59,7 @@ func init() {
 	rootCmd.AddCommand(commands.NewFindCmd())
 	rootCmd.AddCommand(commands.NewWriteCmd())
 	rootCmd.AddCommand(commands.NewBatchCmd())
+	rootCmd.AddCommand(commands.NewRecalcCmd())
 	rootCmd.AddCommand(commands.NewValidateCmd())
 	rootCmd.AddCommand(commands.NewCapabilitiesCmd(resolved))
 	rootCmd.AddCommand(commands.NewDoctorCmd(resolved))

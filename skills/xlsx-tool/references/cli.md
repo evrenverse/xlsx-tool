@@ -41,6 +41,17 @@ Inspect `xlsx-tool batch --help` and `xlsx-tool schema batch` before
 constructing the JSON payload. Writes replace the target atomically after a
 successful save.
 
+## Recalculation
+
+```bash
+xlsx-tool recalc result.xlsx
+```
+
+Recalculation requires LibreOffice on `PATH` and rewrites the workbook in
+place with refreshed formula caches. Its exit code covers recalculation only:
+formula errors and unfilled required cells are content, not failure, and leave
+it at 0. Use `validate` to judge them.
+
 ## Validation
 
 ```bash

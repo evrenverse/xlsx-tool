@@ -110,13 +110,15 @@ Run `xlsx-tool <command> --help` for all options. Commands are:
 | `read` | Read a sheet, range, or bounded cell list |
 | `write` | Set one value or formula |
 | `batch` | Apply multiple writes from JSON |
+| `recalc` | Recalculate formulas in place |
 | `validate` | Recalculate and compare a result to a baseline |
 | `capabilities` | Print the versioned agent contract |
 | `doctor` | Check runtime and optional dependencies |
 | `schema` | List or print bundled JSON Schemas |
 | `version` | Print tool and contract versions |
 
-`validate` requires LibreOffice (`soffice` or `libreoffice`) on `PATH`.
+`recalc` and `validate` require LibreOffice (`soffice` or `libreoffice`) on
+`PATH`.
 LibreOffice runs with a new private profile for every invocation. Core
 inspection and editing commands do not require LibreOffice.
 

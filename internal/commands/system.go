@@ -75,6 +75,7 @@ func capabilities(version string) capabilitiesPayload {
 			{Name: "read", JSON: true},
 			{Name: "write", Mutates: true, JSON: true},
 			{Name: "batch", Mutates: true, JSON: true},
+			{Name: "recalc", Mutates: true, JSON: false, Optional: "libreoffice"},
 			{Name: "validate", Mutates: true, JSON: true, Optional: "libreoffice"},
 			{Name: "capabilities", JSON: true},
 			{Name: "doctor", JSON: true},

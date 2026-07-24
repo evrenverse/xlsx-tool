@@ -13,6 +13,9 @@ Versioning and keeps an [Unreleased] section.
 - Update Excelize and transitive dependencies.
 - Add a versioned, machine-readable Agent Contract with capabilities, doctor,
   version, and bundled JSON Schema commands.
+- Add a `recalc` command that refreshes formula caches in place and reports
+  only whether recalculation succeeded, leaving content judgement to
+  `validate`.
 - Add explicit workbook expansion and batch limits, fuzz tests, race-tested
   coverage enforcement, and a real CLI locate-edit-verify eval.
 - Add CI, CodeQL, dependency review, OpenSSF Scorecard, SBOMs, and provenance
