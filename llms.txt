@@ -1,0 +1,33 @@
+# xlsx-tool
+
+> Agent-friendly CLI for inspecting and editing XLSX workbooks.
+
+Repository: https://github.com/evrenverse/xlsx-tool
+License: MIT
+Language: Go
+
+## Start here
+
+- README.md: installation, guarantees, and examples
+- AGENTS.md: safe agent installation and contribution rules
+- skills/xlsx-tool/SKILL.md: concise runtime workflow
+- skills/xlsx-tool/references/cli.md: command examples
+- SECURITY.md: trust model and vulnerability reporting
+- CONTRIBUTING.md: development contract
+- docs/agent-contract.md: versioned machine interface and exit behavior
+- docs/architecture.md: component and trust-boundary overview
+- evals/README.md: reproducible locate-edit-verify evaluation
+
+## CLI
+
+Install with:
+
+    go install github.com/evrenverse/xlsx-tool/cmd/xlsx-tool@latest
+
+Discover exact syntax with:
+
+    xlsx-tool --help
+    xlsx-tool <command> --help
+    xlsx-tool capabilities --json
+    xlsx-tool doctor --json
+    xlsx-tool schema

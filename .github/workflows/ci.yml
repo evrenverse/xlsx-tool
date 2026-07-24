@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Quality, tests, and agent eval
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      - name: Install LibreOffice integration dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes libreoffice-calc
+      - name: Check formatting
+        run: test -z "$(gofmt -l cmd internal evals)"
+      - name: Vet
+        run: go vet ./...
+      - name: Test with race detector and coverage
+        run: >-
+          go test -race -coverprofile=coverage.out
+          ./cmd/... ./internal/commands ./internal/format
+      - name: Enforce coverage floor
+        run: bash scripts/check-go-coverage.sh coverage.out 80
+      - name: Run agent workflow eval
+        run: go run ./evals
+      - name: Build
+        run: go build ./cmd/xlsx-tool
+
+  compatibility:
+    name: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      - run: go test ./...
+      - run: go run ./cmd/xlsx-tool capabilities --json
+      - run: go run ./cmd/xlsx-tool doctor --json
+      - run: go build ./cmd/xlsx-tool
+
+  vulnerability-scan:
+    name: Known-vulnerability scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      - run: GOTOOLCHAIN="$(go env GOVERSION)" go run golang.org/x/vuln/cmd/govulncheck@v1.1.4 ./...

@@ -1,0 +1,10 @@
+{
+  "id": "locate-edit-verify",
+  "intent": "Locate a total cell, update it, and verify the stored value.",
+  "workflow": ["info", "find", "read", "write", "read"],
+  "success_criteria": [
+    "The label is found without an unscoped workbook dump.",
+    "The update is applied atomically.",
+    "The final bounded read returns 1250."
+  ]
+}

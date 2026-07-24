@@ -1,0 +1,4 @@
+interface:
+  display_name: "XLSX Tool"
+  short_description: "Inspect and edit spreadsheets safely"
+  default_prompt: "Use $xlsx-tool to inspect and update this XLSX file safely."

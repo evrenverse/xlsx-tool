@@ -1,0 +1,28 @@
+{
+  "name": "xlsx-tool",
+  "version": "0.1.0",
+  "description": "Teach AI agents to inspect and edit XLSX workbooks through a self-describing, bounded CLI.",
+  "author": {
+    "name": "Evrenverse",
+    "url": "https://github.com/evrenverse"
+  },
+  "homepage": "https://github.com/evrenverse/xlsx-tool#readme",
+  "repository": "https://github.com/evrenverse/xlsx-tool",
+  "license": "MIT",
+  "keywords": ["xlsx", "spreadsheet", "cli", "agent-skill"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "XLSX Tool",
+    "shortDescription": "Inspect and edit spreadsheets safely",
+    "longDescription": "A focused Agent Skill for a versioned agent contract, bounded XLSX reads, JSON output, atomic writes, and read-back verification.",
+    "developerName": "Evrenverse",
+    "category": "Productivity",
+    "capabilities": ["Read", "Write"],
+    "websiteURL": "https://github.com/evrenverse/xlsx-tool",
+    "defaultPrompt": [
+      "Inspect this XLSX file and summarize its structure.",
+      "Update these spreadsheet cells and verify the result.",
+      "Find the requested values without dumping the workbook."
+    ]
+  }
+}

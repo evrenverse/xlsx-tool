@@ -1,0 +1,48 @@
+version: 2
+
+builds:
+  - main: ./cmd/xlsx-tool
+    binary: xlsx-tool
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - LICENSE
+      - README.md
+      - CHANGELOG.md
+      - SECURITY.md
+      - SUPPORT.md
+      - THIRD_PARTY_NOTICES.md
+      - AGENTS.md
+      - llms.txt
+      - .codex-plugin/plugin.json
+      - skills/xlsx-tool/SKILL.md
+      - skills/xlsx-tool/agents/openai.yaml
+      - skills/xlsx-tool/references/cli.md
+      - docs/*.md
+      - third_party_licenses/**/*
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"

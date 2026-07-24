@@ -1,0 +1,18 @@
+# Binaries
+/xlsx-tool
+*.exe
+dist/
+coverage.out
+
+# Test fixtures generated
+testdata/output_*
+
+# IDE and local agent scratch
+.idea/
+.vscode/
+.claude/
+.superpowers/
+
+# OS files
+.DS_Store
+Thumbs.db
