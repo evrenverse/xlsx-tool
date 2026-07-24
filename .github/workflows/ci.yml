@@ -34,10 +34,10 @@ jobs:
           ./cmd/... ./internal/commands ./internal/format
       - name: Enforce coverage floor
         run: bash scripts/check-go-coverage.sh coverage.out 80
-      - name: Run agent workflow eval
-        run: go run ./evals
       - name: Build
         run: go build ./cmd/xlsx-tool
+      - name: Run agent workflow eval
+        run: XLSX_TOOL_BIN=./xlsx-tool go run ./evals
 
   compatibility:
     name: ${{ matrix.os }}

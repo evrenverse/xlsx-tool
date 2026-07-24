@@ -16,8 +16,10 @@ coverage:
 	go test -coverprofile=coverage.out ./cmd/... ./internal/commands ./internal/format
 	bash scripts/check-go-coverage.sh coverage.out 80
 
-eval:
-	go run ./evals
+# Evaluate the binary from this checkout, not whatever xlsx-tool happens to be
+# on PATH.
+eval: build
+	XLSX_TOOL_BIN=./xlsx-tool go run ./evals
 
 build:
 	go build ./cmd/xlsx-tool
@@ -31,7 +33,6 @@ check: format-check
 	go test -race ./...
 	$(MAKE) coverage
 	$(MAKE) eval
-	$(MAKE) build
 
 release-check: check
 	printf '%s\n' "$${GITHUB_REF_NAME}" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+([+-][0-9A-Za-z.-]+)?$$'

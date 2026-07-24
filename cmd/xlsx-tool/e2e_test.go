@@ -6,21 +6,47 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
 	"github.com/evrenverse/xlsx-tool/internal/testutil"
 )
 
-// TestE2E_AgentWorkflow simulates how an AI agent would use xlsx-tool.
-func TestE2E_AgentWorkflow(t *testing.T) {
-	// Build the binary
-	binPath := filepath.Join(t.TempDir(), "xlsx-tool")
+// buildBinary compiles the CLI into the test's temp directory and returns its
+// path. Windows will not execute a file without the .exe suffix, so the name
+// has to carry it there.
+func buildBinary(t *testing.T) string {
+	t.Helper()
+	name := "xlsx-tool"
+	if runtime.GOOS == "windows" {
+		name += ".exe"
+	}
+	binPath := filepath.Join(t.TempDir(), name)
 	build := exec.Command("go", "build", "-o", binPath, "./cmd/xlsx-tool/")
 	build.Dir = filepath.Join("..", "..")
 	if out, err := build.CombinedOutput(); err != nil {
 		t.Fatalf("build failed: %v\n%s", err, out)
 	}
+	return binPath
+}
+
+// requireLibreOffice skips a test that needs the optional recalculation
+// dependency, so a checkout without LibreOffice still runs the rest.
+func requireLibreOffice(t *testing.T) {
+	t.Helper()
+	for _, candidate := range []string{"soffice", "libreoffice"} {
+		if _, err := exec.LookPath(candidate); err == nil {
+			return
+		}
+	}
+	t.Skip("LibreOffice not installed; skipping recalculation end-to-end test")
+}
+
+// TestE2E_AgentWorkflow simulates how an AI agent would use xlsx-tool.
+func TestE2E_AgentWorkflow(t *testing.T) {
+	// Build the binary
+	binPath := buildBinary(t)
 
 	// Create test fixture
 	xlsxPath := testutil.CreateSimpleFixture(t)
@@ -109,12 +135,8 @@ func TestE2E_AgentWorkflow(t *testing.T) {
 // exit 0 + ok:true on a clean file, exit 1 + ok:false + a JSON body carrying
 // the new error and its operand diagnostic on a file with a broken gate.
 func TestE2E_Validate(t *testing.T) {
-	binPath := filepath.Join(t.TempDir(), "xlsx-tool")
-	build := exec.Command("go", "build", "-o", binPath, "./cmd/xlsx-tool/")
-	build.Dir = filepath.Join("..", "..")
-	if out, err := build.CombinedOutput(); err != nil {
-		t.Fatalf("build failed: %v\n%s", err, out)
-	}
+	requireLibreOffice(t)
+	binPath := buildBinary(t)
 
 	baseline := testutil.CreateValidateBaselineGateFixture(t)
 	produced := testutil.CreateValidateProducedGateFixture(t)
@@ -190,12 +212,7 @@ func TestE2E_Validate(t *testing.T) {
 
 // TestE2E_ValidateMissingBaseline verifies --baseline is required.
 func TestE2E_ValidateMissingBaseline(t *testing.T) {
-	binPath := filepath.Join(t.TempDir(), "xlsx-tool")
-	build := exec.Command("go", "build", "-o", binPath, "./cmd/xlsx-tool/")
-	build.Dir = filepath.Join("..", "..")
-	if out, err := build.CombinedOutput(); err != nil {
-		t.Fatalf("build failed: %v\n%s", err, out)
-	}
+	binPath := buildBinary(t)
 
 	produced := testutil.CreateValidateBaselineFixture(t)
 	cmd := exec.Command(binPath, "validate", produced)
@@ -226,12 +243,7 @@ func runCLI(t *testing.T, binPath string, args ...string) string {
 // TestE2E_ErrorOutput verifies single-line error reporting: exit code 1,
 // exactly one "Error:" line, no usage dump, no duplicate message.
 func TestE2E_ErrorOutput(t *testing.T) {
-	binPath := filepath.Join(t.TempDir(), "xlsx-tool")
-	build := exec.Command("go", "build", "-o", binPath, "./cmd/xlsx-tool/")
-	build.Dir = filepath.Join("..", "..")
-	if out, err := build.CombinedOutput(); err != nil {
-		t.Fatalf("build failed: %v\n%s", err, out)
-	}
+	binPath := buildBinary(t)
 
 	xlsxPath := testutil.CreateSimpleFixture(t)
 
@@ -259,12 +271,7 @@ func TestE2E_ErrorOutput(t *testing.T) {
 // TestE2E_FindZeroMatches_ExitCode verifies find exits 1 on zero matches
 // while still printing the zero-match message / valid JSON.
 func TestE2E_FindZeroMatches_ExitCode(t *testing.T) {
-	binPath := filepath.Join(t.TempDir(), "xlsx-tool")
-	build := exec.Command("go", "build", "-o", binPath, "./cmd/xlsx-tool/")
-	build.Dir = filepath.Join("..", "..")
-	if out, err := build.CombinedOutput(); err != nil {
-		t.Fatalf("build failed: %v\n%s", err, out)
-	}
+	binPath := buildBinary(t)
 
 	xlsxPath := testutil.CreateSimpleFixture(t)
 

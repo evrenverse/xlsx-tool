@@ -6,7 +6,7 @@ Issues and focused pull requests are welcome.
 
 1. Install Go 1.25 or newer. `make check` also needs LibreOffice (`soffice` or
    `libreoffice` on `PATH`, package `libreoffice-calc`); the recalculation
-   tests fail without it and the coverage gate then fails too.
+   tests skip without it and the coverage gate then falls below its floor.
 2. Create a branch and add tests for behavior changes.
 3. Run the same local gate used by CI:
 
