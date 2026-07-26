@@ -97,3 +97,69 @@ func TestRecalcWithLibreOffice(t *testing.T) {
 		t.Fatalf("expected cached formula value 3, got %q", value)
 	}
 }
+
+// TestRecalcWithLibreOfficeRefreshesStaleCache covers the case the workbooks in
+// the field actually hit: the formula already carries a cached result from an
+// earlier calculation and an input cell changed underneath it. LibreOffice
+// calculates cache-less cells regardless of its load setting, so a workbook
+// built fresh in a test cannot detect a recalculation that never runs — this
+// one can.
+func TestRecalcWithLibreOfficeRefreshesStaleCache(t *testing.T) {
+	if _, err := findLibreOffice(); err != nil {
+		t.Skip("LibreOffice is not installed")
+	}
+
+	path := filepath.Join(t.TempDir(), "stale.xlsx")
+	workbook := excelize.NewFile()
+	for cell, value := range map[string]int{"A1": 1, "A2": 2} {
+		if err := workbook.SetCellValue("Sheet1", cell, value); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := workbook.SetCellFormula("Sheet1", "A3", "=SUM(A1:A2)"); err != nil {
+		t.Fatal(err)
+	}
+	if err := workbook.SaveAs(path); err != nil {
+		t.Fatal(err)
+	}
+	if err := workbook.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	// First pass populates the cache with 3.
+	if err := recalcWithLibreOffice(path); err != nil {
+		t.Fatal(err)
+	}
+
+	// Change an input without touching the dependent formula's cache. This is
+	// what a `batch` write leaves behind minus its fullCalcOnLoad flag.
+	edited, err := excelize.OpenFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := edited.SetCellValue("Sheet1", "A1", 10); err != nil {
+		t.Fatal(err)
+	}
+	if err := edited.Save(); err != nil {
+		t.Fatal(err)
+	}
+	if err := edited.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := recalcWithLibreOffice(path); err != nil {
+		t.Fatal(err)
+	}
+	recalculated, err := excelize.OpenFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer recalculated.Close()
+	value, err := recalculated.GetCellValue("Sheet1", "A3")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if value != "12" {
+		t.Fatalf("stale cache was not refreshed: expected 12, got %q", value)
+	}
+}

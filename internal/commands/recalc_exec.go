@@ -15,6 +15,41 @@ import (
 
 const recalcTimeout = 120 * time.Second
 
+// recalcProfileRegistry forces Calc to recalculate every formula while loading.
+//
+// LibreOffice ships "never recalculate" as the load default for OOXML (and
+// "prompt" for ODF). A --convert-to round trip on a workbook that already
+// carries cached results therefore rewrites those stale values verbatim and
+// exits 0 — a silent no-op. Worse, the round trip drops the fullCalcOnLoad
+// flag `batch` and `write` set, so the workbook loses the recalculation it
+// would otherwise have performed when a spreadsheet application opened it.
+//
+// The throwaway profile has no user configuration to override the default,
+// so seed it with both load modes set to 0 (= always recalculate).
+const recalcProfileRegistry = `<?xml version="1.0" encoding="UTF-8"?>
+<oor:items xmlns:oor="http://openoffice.org/2001/registry" ` +
+	`xmlns:xs="http://www.w3.org/2001/XMLSchema" ` +
+	`xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <item oor:path="/org.openoffice.Office.Calc/Formula/Load">` +
+	`<prop oor:name="OOXMLRecalcMode" oor:op="fuse"><value>0</value></prop></item>
+ <item oor:path="/org.openoffice.Office.Calc/Formula/Load">` +
+	`<prop oor:name="ODFRecalcMode" oor:op="fuse"><value>0</value></prop></item>
+</oor:items>
+`
+
+// seedRecalcProfile writes recalcProfileRegistry into a fresh user profile.
+func seedRecalcProfile(profileDir string) error {
+	userDir := filepath.Join(profileDir, "user")
+	if err := os.MkdirAll(userDir, 0o700); err != nil {
+		return fmt.Errorf("create recalculation profile directory: %w", err)
+	}
+	registry := filepath.Join(userDir, "registrymodifications.xcu")
+	if err := os.WriteFile(registry, []byte(recalcProfileRegistry), 0o600); err != nil {
+		return fmt.Errorf("seed recalculation profile: %w", err)
+	}
+	return nil
+}
+
 // runExternalRecalc refreshes formula caches in xlsxPath with LibreOffice.
 //
 // XLSX_RECALC_BIN remains as a narrow testing and integration hook. Without
@@ -70,6 +105,10 @@ func recalcWithLibreOffice(xlsxPath string) error {
 	inputPath := filepath.Join(inputDir, "workbook.xlsx")
 	if err := copyFile(inputPath, absolute, 0o600); err != nil {
 		return fmt.Errorf("copy workbook for recalculation: %w", err)
+	}
+
+	if err := seedRecalcProfile(profileDir); err != nil {
+		return err
 	}
 
 	profileURL := (&url.URL{Scheme: "file", Path: filepath.ToSlash(profileDir)}).String()
