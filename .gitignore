@@ -16,3 +16,6 @@ testdata/output_*
 # OS files
 .DS_Store
 Thumbs.db
+
+# Local project card — not part of the published repository.
+PROJECT.md
