@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/social-preview.png" alt="xlsx-tool — agent-friendly spreadsheet automation" width="100%">
+</p>
+
 # xlsx-tool
 
 [![CI](https://github.com/evrenverse/xlsx-tool/actions/workflows/ci.yml/badge.svg)](https://github.com/evrenverse/xlsx-tool/actions/workflows/ci.yml)
